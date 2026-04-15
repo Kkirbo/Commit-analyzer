@@ -3,30 +3,30 @@
 REPO_URL="$1"
 
 BASE_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+REPO_DIR="$BASE_DIR/repo"
+OUTPUT_DIR="$BASE_DIR/output"
 
-mkdir -p "$BASE_DIR/output"
+mkdir -p "$OUTPUT_DIR"
 
-# 🧹 reset repo
-rm -rf "$BASE_DIR/repo"
 
-echo "📥 Clonage repo..."
-git clone "$REPO_URL" "$BASE_DIR/repo" || exit 1
-
-# 📊 commits propres
-git -C "$BASE_DIR/repo" log \
-    --pretty=format:"%an|%ad|%s" --date=short \
-    > "$BASE_DIR/output/commits.txt"
-
-# ❌ sécurité
-if [ ! -s "$BASE_DIR/output/commits.txt" ]; then
-    echo "ERREUR: commits.txt vide"
-    exit 1
+if [ -d "$REPO_DIR" ]; then
+    echo "🧹 Suppression ancien repo..."
+    rm -rf "$REPO_DIR"
 fi
 
-# 📊 stats propres
-cut -d'|' -f1 "$BASE_DIR/output/commits.txt" \
+
+echo " Clonage repo..."
+git clone "$REPO_URL" "$REPO_DIR" || exit 1
+
+
+git -C "$REPO_DIR" log \
+    --pretty=format:"%an|%ad|%s" --date=short \
+    > "$OUTPUT_DIR/commits.txt"
+
+
+cut -d'|' -f1 "$OUTPUT_DIR/commits.txt" \
 | sed 's/^ *//;s/ *$//' \
 | sort | uniq -c | sort -nr \
-> "$BASE_DIR/output/stats.txt"
+> "$OUTPUT_DIR/stats.txt"
 
 echo "OK"
