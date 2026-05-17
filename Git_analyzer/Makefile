@@ -18,4 +18,4 @@ clean:
 	rm -f $(TARGET)
 	rm -f $(OUTPUT_DIR)/*.txt
 	rm -f $(OUTPUT_DIR)/*.png
-	rm -f graph.png
+	rm -f output/graphs/*.png
